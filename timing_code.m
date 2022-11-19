@@ -44,12 +44,12 @@ t_index = 1;
 %     tplot = 10000;
 %     tot_mass = zeros(1, round(Nsteps/tplot));
 %     time = zeros(1, round(Nsteps/tplot));
-    
+    a
     u_0 = u; % initial condition
     plot_index = 1;
     
     mass_index = 1;
-    cutoff = 0.98; % value we narrow band around
+    cutoff = 0.99; % value we narrow band around
     for n = 1:Nsteps
         u_prev = u;
     
@@ -123,7 +123,7 @@ t_index = 1;
     
 writematrix(u, "AllenCahn500s_adaptive_soln.csv")
 
-writematrix(adaptive_times, "adaptive_timing_500s.csv");
+writematrix(adaptive_times, "adaptive_timing_500s_cutoff99_m3.csv");
 
 matrix_start_time = tic;
 matrix_times = zeros(1, tFinal/timing_gap);
@@ -213,7 +213,7 @@ t_index = 1;
 
     writematrix(u, "AllenCahn500s_matrix_soln.csv")
 
-    writematrix(matrix_times, "matrix_times_500s.csv");
+    writematrix(matrix_times, "matrix_times_500s_cutoff99_m3.csv");
 
 % m: number of surrounding neighbors to add
 % row, col: indicies of cells being targeted
