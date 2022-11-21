@@ -7,7 +7,7 @@ set(0,'defaultAxesFontSize',35)
 % clf
 % clearvars
 
-tFinal = 500;
+tFinal = 750;
 timing_gap = 10;
 
 adaptive_start_time = tic;
@@ -44,28 +44,31 @@ t_index = 1;
 %     tplot = 10000;
 %     tot_mass = zeros(1, round(Nsteps/tplot));
 %     time = zeros(1, round(Nsteps/tplot));
-    a
     u_0 = u; % initial condition
     plot_index = 1;
     
     mass_index = 1;
-    cutoff = 0.99; % value we narrow band around
+    num_points_sampled = zeros(1, tFinal/timing_gap);
+    cutoff = 0.90; % value we narrow band around
+    sample_index = 1;
     for n = 1:Nsteps
         u_prev = u;
     
-        % get indicies of narrow band locations
-        [row, col] = find(abs(u) < cutoff);
     
         % m is how far we extend the narrow bands in a square of cells, i.e. 
         % we use all cells in a (2m+1)*(2m+1) square around the center cell
-        m = 3;
+        m = 4;
         % recompute the m nearest neighbors every this many time steps. this
         % seems to be okay since the interface moves so slowly, and saves a ton
         % of time since the nearest_neighbors function is a bit slow. can lower
         % it for better accuracy if you run into problems
         recompute_thresh = 5000; 
         if mod(n, recompute_thresh) == 1 %
+            % get indicies of narrow band location
+            [row, col] = find(abs(u) < cutoff);
             [row, col] = m_nearest_neighbors(m, row, col, N);
+            num_points_sampled(sample_index) = length(row);
+            sample_index = sample_index + 1;
         end
     
         u_star = u;
@@ -109,6 +112,7 @@ t_index = 1;
             name = strcat("gif/AllenCahnStep", num2str(plot_index), ".csv");
             plot_index = plot_index + 1;
             writematrix(u, name);
+            u_old = u;
         end
 
         if n*dt > t_index*timing_gap
@@ -121,9 +125,10 @@ t_index = 1;
 
     adaptive_times = [0 adaptive_times]
     
-writematrix(u, "AllenCahn500s_adaptive_soln.csv")
+writematrix(u, "AllenCahn750s_adaptive_soln.csv")
+writematrix(num_points_sampled, "sampled_points.csv");
 
-writematrix(adaptive_times, "adaptive_timing_500s_cutoff99_m3.csv");
+writematrix(adaptive_times, "adaptive_timing_750s_cutoff99_m3.csv");
 
 matrix_start_time = tic;
 matrix_times = zeros(1, tFinal/timing_gap);

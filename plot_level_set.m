@@ -35,12 +35,14 @@ tiledlayout(1, 2);
 nexttile
 
 colormap('bone');
-img = surf(X,Y,reshape(u,N,N)-1.1);
+img = surf(X,Y,reshape(u,N,N)-1);
 set(img,'edgecolor','none')
 zlim([-2.1 1.1])
 view(0, 90);
 camlight
 drawnow
+title("Phase separation plot")
+colorbar('Ticks', [-1.98, -1, -0.01], 'TickLabels', {'1', '0', '-1'})
 
 nexttile
 

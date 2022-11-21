@@ -26,9 +26,9 @@ h = dx;
 epsilon = dx;
 CFL = 0.001;
 dt = CFL*(dx);
-tFinal = 50.0;
+tFinal = 150.0;
 Nsteps = round(tFinal/dt);
-t_plot = 10000;
+t_plot = 100000;
 
 u = readmatrix("data/AllenCahn50s_soln.csv");
 u = reshape(u, [N,N]);
@@ -45,31 +45,24 @@ drawnow
 F = @(u_0) exp(dt) ./ ( sqrt( (1./(u_0.^2) + exp(2*dt) - 1)));
 
 tplot = 10000;
-tot_mass = zeros(1, round(Nsteps/tplot));
-time = zeros(1, round(Nsteps/tplot));
-
-tot_mass(1) = sum(u, 'all');
-time(1) = 0;
 
 u_0 = u; % initial condition
 
-mass_index = 1;
-cutoff = 0.99; % value we narrow band around
+cutoff = 5; % value we narrow band around
 for n = 1:Nsteps
     u_prev = u;
 
-    % get indicies of narrow band locations
-    [row, col] = find(abs(u) < cutoff);
-
     % m is how far we extend the narrow bands in a square of cells, i.e. 
     % we use all cells in a (2m+1)*(2m+1) square around the center cell
-    m = 3;
+    m = 1;
     % recompute the m nearest neighbors every this many time steps. this
     % seems to be okay since the interface moves so slowly, and saves a ton
     % of time since the nearest_neighbors function is a bit slow. can lower
     % it for better accuracy if you run into problems
-    recompute_thresh = 5000; 
-    if mod(n, recompute_thresh) == 1 %
+    recompute_thresh = 5000;
+    if mod(n, recompute_thresh) == 1
+            % get indicies of narrow band locations
+        [row, col] = find(abs(u) < cutoff);
         [row, col] = m_nearest_neighbors(m, row, col, N);
     end
 
@@ -110,13 +103,6 @@ for n = 1:Nsteps
 
     u = u_star2 + dt*beta * (1/2)*(u_star2.*(u_star2 - sqrt(2)));
 
-    % mass plotting code
-    if mod(n, t_plot) == 0
-        tot_mass(mass_index) = sum(u, 'all')*(1/dx^2);
-        time(mass_index) = n*dt;
-        mass_index = mass_index + 1;
-    end
-
     if mod(n,t_plot) == 0
        length(row);
        img = surf(X,Y,reshape(u,N,N));
@@ -130,9 +116,7 @@ for n = 1:Nsteps
     end
 end
 
-% writematrix(u, "AllenCahn50s_soln.csv")
-
-plot(time, tot_mass);
+writematrix(u, "AllenCahn100s_soln.csv")
 
 % surf(X, Y, reshape(u, [N,N]));
 

@@ -1,7 +1,3 @@
-u = readmatrix("gif/AllenCahnStep1.csv");
-v = readmatrix("gif/AllenCahnStep50.csv");
-
-sum(abs(u-v), 'all')
 %%% Setup grid in x-y
 N = 64; % number of grid point along one direction
 x = linspace(0,1,N+1); % type 1 grid
@@ -21,17 +17,18 @@ surf(X, Y, u);
 
 
 
-for i = 1:50
+for i = 1:75
     
     clf
     filename = strcat("gif/AllenCahnStep", num2str(i), ".csv");
     u = readmatrix(filename);
+    zlim([-1.1 1.1])
     img = surf(X,Y,reshape(u,N,N));
     set(img,'edgecolor','none')
-    zlim([-1.1 1.1])
     title(['t = ' num2str(i*10)])
     view(0, 90);
-    colorbar
+    colorbar('Ticks', [-0.97, -0.5, 0, 0.5, 0.97], ...
+    'TickLabels', {'-1', '-0.5', '0', '0.5', '1'})
     camlight
     
     if i == 1
